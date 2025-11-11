@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - Tulsattva{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center mb-5" style="font-family: 'Playfair Display', serif; color: #d4af37;">
+        My Profile
+    </h1>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="far fa-user fa-5x mb-4" style="color: #d4af37;"></i>
+                    <h4>Welcome to Tulsattva</h4>
+                    <p class="text-muted">Sign in to access your account</p>
+                    <button class="btn btn-warning me-2">Sign In</button>
+                    <button class="btn btn-outline-warning">Create Account</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

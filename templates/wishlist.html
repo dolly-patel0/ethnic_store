@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Wishlist - Tulsattva{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center mb-5" style="font-family: 'Playfair Display', serif; color: #d4af37;">
+        My Wishlist
+    </h1>
+    
+    <div class="text-center">
+        <i class="far fa-heart fa-5x mb-4" style="color: #d4af37;"></i>
+        <h3>Your wishlist is empty</h3>
+        <p>Start adding your favorite items to your wishlist!</p>
+        <a href="{% url 'ethnic_wear' %}" class="btn btn-warning">Start Shopping</a>
+    </div>
+</div>
+{% endblock %}

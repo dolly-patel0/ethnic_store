@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact - Tulsattva{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-5" style="font-family: 'Playfair Display', serif; color: #d4af37;">
+        Contact Us
+    </h1>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <!-- Messages Display -->
+            {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Get in Touch</h5>
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required
+                                   placeholder="Enter your full name">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required
+                                   placeholder="your@email.com">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="subject" name="subject" required
+                                   placeholder="Enter subject">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea class="form-control" id="message" name="message" rows="5" required
+                                      placeholder="Your message..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-paper-plane me-2"></i>Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Store Information</h5>
+                    <p><i class="fas fa-map-marker-alt me-2"></i> 123 Fashion Street, Mumbai, India</p>
+                    <p><i class="fas fa-phone me-2"></i> +91 98765 43210</p>
+                    <p><i class="fas fa-envelope me-2"></i> info@tulsattva.com</p>
+                    <p><i class="fas fa-clock me-2"></i> Mon-Sat: 10:00 AM - 8:00 PM</p>
+                    
+                    <!-- Map Placeholder -->
+                    <div class="mt-4" style="background: #f8f9fa; height: 200px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #666;">
+                        <i class="fas fa-map-marked-alt me-2"></i> Store Location Map
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

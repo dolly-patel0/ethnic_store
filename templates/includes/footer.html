@@ -1,0 +1,130 @@
+{% load static %}
+<footer class="main-footer">
+    <!-- Main Footer Content -->
+    <div class="footer-main">
+        <div class="container">
+            <div class="footer-brand text-center mb-5">
+                <a href="{% url 'home' %}" class="footer-logo">Tulsattva</a>
+                <p class="footer-tagline">Where Tradition Meets Contemporary Elegance</p>
+            </div>
+
+            <div class="row">
+                <!-- About Us Column -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="footer-section">
+                        <h5 class="footer-heading">About Us</h5>
+                        <p class="footer-text">
+                            Tulsattva celebrates the rich heritage of Indian craftsmanship 
+                            through contemporary designs. We blend traditional artistry with 
+                            modern aesthetics to create timeless ethnic fashion for today's 
+                            global citizen.
+                        </p>
+                        <div class="footer-payment-methods mt-3">
+                            <p class="payment-text">We Accept:</p>
+                            <div class="payment-icons">
+                                <i class="fab fa-cc-visa"></i>
+                                <i class="fab fa-cc-mastercard"></i>
+                                <i class="fab fa-cc-paypal"></i>
+                                <i class="fab fa-cc-apple-pay"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Links Column -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="footer-section">
+                        <h5 class="footer-heading">Quick Links</h5>
+                        <ul class="footer-links">
+                            <li><a href="{% url 'home' %}">Home</a></li>
+                            <li><a href="{% url 'ethnic_wear' %}">Ethnic Wear</a></li>
+                            <li><a href="{% url 'office_wear' %}">Office Wear</a></li>
+                            <li><a href="{% url 'tops_tunics' %}">Tops & Tunics</a></li>
+                            <li><a href="{% url 'collections' %}">Collections</a></li>
+                            <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Customer Care Column -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="footer-section">
+                        <h5 class="footer-heading">Customer Care</h5>
+                        <ul class="footer-links">
+                            <li><a href="{% url 'faq' %}">FAQs</a></li>
+                            <li><a href="{% url 'returns' %}">Returns & Exchange</a></li>
+                            <li><a href="{% url 'shipping' %}">Shipping Info</a></li>
+                            <li><a href="{% url 'size_guide' %}">Size Guide</a></li>
+                            <li><a href="{% url 'privacy' %}">Privacy Policy</a></li>
+                            <li><a href="{% url 'terms' %}">Terms & Conditions</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Follow Us Column -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="footer-section">
+                        <h5 class="footer-heading">Follow Us</h5>
+                        <p class="footer-text">
+                            Stay connected for the latest collections, styling tips, 
+                            and exclusive offers.
+                        </p>
+                        
+                        <div class="social-links">
+                            <a href="#" class="social-link">
+                                <i class="fab fa-instagram"></i>
+                                <span>Instagram</span>
+                            </a>
+                            <a href="#" class="social-link">
+                                <i class="fab fa-facebook-f"></i>
+                                <span>Facebook</span>
+                            </a>
+                            <a href="#" class="social-link">
+                                <i class="fab fa-pinterest-p"></i>
+                                <span>Pinterest</span>
+                            </a>
+                            <a href="#" class="social-link">
+                                <i class="fab fa-twitter"></i>
+                                <span>Twitter</span>
+                            </a>
+                        </div>
+
+                        <!-- Newsletter Subscription -->
+                        <div class="newsletter-section mt-4">
+                            <h6 class="newsletter-title">Newsletter</h6>
+                            <p class="newsletter-text">Get updates on new arrivals & special offers</p>
+                            <form class="newsletter-form">
+                                <div class="input-group">
+                                    <input type="email" class="form-control" placeholder="Your email address">
+                                    <button class="btn newsletter-btn" type="submit">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copyright Bar -->
+    <div class="footer-bottom">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="copyright-text">
+                        © 2025 Tulsattva. All Rights Reserved.
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <div class="footer-bottom-links">
+                        <a href="{% url 'privacy' %}">Privacy Policy</a>
+                        <span class="separator">|</span>
+                        <a href="{% url 'terms' %}">Terms of Service</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>

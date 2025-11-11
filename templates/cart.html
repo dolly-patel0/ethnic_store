@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Cart - Tulsattva{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center mb-5" style="font-family: 'Playfair Display', serif; color: #d4af37;">
+        Shopping Cart
+    </h1>
+    
+    <div class="text-center">
+        <i class="fas fa-shopping-bag fa-5x mb-4" style="color: #d4af37;"></i>
+        <h3>Your cart is empty</h3>
+        <p>Add some beautiful ethnic wear to your cart!</p>
+        <a href="{% url 'ethnic_wear' %}" class="btn btn-warning">Continue Shopping</a>
+    </div>
+</div>
+{% endblock %}

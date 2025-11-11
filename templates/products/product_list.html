@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ category_display }} - Tulsattva{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-gold">Home</a></li>
+            {% if category %}
+            <li class="breadcrumb-item"><a href="{% url 'products:product_list' %}" class="text-gold">Products</a></li>
+            <li class="breadcrumb-item active">{{ category_display }}</li>
+            {% else %}
+            <li class="breadcrumb-item active">All Products</li>
+            {% endif %}
+        </ol>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="text-center mb-5">
+        <h1 class="page-title">{{ category_display }}</h1>
+        <p class="page-subtitle">Discover our exquisite collection of ethnic fashion</p>
+        
+        <!-- Debug Info (temporarily) -->
+        <div class="alert alert-info">
+            <strong>Debug:</strong> Total Products: {{ products.count }}
+        </div>
+    </div>
+
+    <!-- Category Filters -->
+    <div class="category-filters mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="d-flex flex-wrap justify-content-center gap-3">
+                    <a href="{% url 'products:product_list' %}" 
+                       class="category-filter-btn {% if not category %}active{% endif %}">
+                        All Products
+                    </a>
+                    {% for cat_value, cat_name in categories %}
+                    <a href="{% url 'products:product_list_by_category' category=cat_value %}" 
+                       class="category-filter-btn {% if category == cat_value %}active{% endif %}">
+                        {{ cat_name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="container">
+        {% if products %}
+        <div class="row g-4">
+            {% for product in products %}
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="product-card">
+                    <div class="product-image">
+                        {% if product.image %}
+                        <a href="{% url 'products:product_detail' product.slug %}">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+                        </a>
+                        {% else %}
+                        <div class="no-image-placeholder">
+                            <i class="fas fa-image"></i>
+                            <span>No Image</span>
+                        </div>
+                        {% endif %}
+                        
+                        {% if product.featured %}
+                        <span class="featured-badge">Featured</span>
+                        {% endif %}
+                        
+                        <div class="product-actions">
+                            <button class="action-btn wishlist-btn" data-product-id="{{ product.id }}">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="product-info">
+                        <span class="product-category">{{ product.get_category_display_name }}</span>
+                        <h3 class="product-name">
+                            <a href="{% url 'products:product_detail' product.slug %}">
+                                {{ product.name }}
+                            </a>
+                        </h3>
+                        <div class="product-price">₹{{ product.price }}</div>
+                        
+                        {% if product.in_stock %}
+                        <span class="stock-badge in-stock">In Stock</span>
+                        {% else %}
+                        <span class="stock-badge out-of-stock">Out of Stock</span>
+                        {% endif %}
+                        
+                        <a href="{% url 'products:product_detail' product.slug %}" class="product-detail-btn">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+            <h3 class="text-muted">No products found</h3>
+            <p class="text-muted">We're adding new products to this category soon.</p>
+            
+            <!-- Admin Link -->
+            {% if user.is_staff %}
+            <a href="/admin/products/product/add/" class="btn btn-warning mt-3">
+                <i class="fas fa-plus me-2"></i>Add New Product
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

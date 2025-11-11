@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - Tulsattva{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-gold">Home</a></li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'products:product_list_by_category' category=product.category %}" class="text-gold">
+                    {{ product.get_category_display_name }}
+                </a>
+            </li>
+            <li class="breadcrumb-item active">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-5">
+        <!-- Product Images -->
+        <div class="col-lg-6">
+            <div class="product-gallery">
+                <!-- Main Image -->
+                <div class="main-image mb-4">
+                    <img id="mainProductImage" src="{{ product.image.url }}" alt="{{ product.name }}" 
+                         class="img-fluid rounded-3" style="width: 100%; height: 500px; object-fit: cover;">
+                </div>
+                
+                <!-- Thumbnail Images -->
+                <div class="thumbnail-gallery">
+                    <div class="row g-2">
+                        <div class="col-3">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" 
+                                 class="img-fluid thumbnail-img active" 
+                                 onclick="changeMainImage(this.src)" 
+                                 style="height: 100px; object-fit: cover; cursor: pointer;">
+                        </div>
+                        {% for image in product.get_additional_images %}
+                        <div class="col-3">
+                            <img src="{{ image.url }}" alt="{{ product.name }}" 
+                                 class="img-fluid thumbnail-img" 
+                                 onclick="changeMainImage(this.src)" 
+                                 style="height: 100px; object-fit: cover; cursor: pointer;">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="col-lg-6">
+            <div class="product-details">
+                <span class="product-category-badge">{{ product.get_category_display_name }}</span>
+                <h1 class="product-title">{{ product.name }}</h1>
+                
+                <div class="product-price-section mb-4">
+                    <span class="product-price">₹{{ product.price }}</span>
+                    <span class="stock-badge in-stock">
+                        <i class="fas fa-check-circle me-1"></i>In Stock
+                    </span>
+                </div>
+
+                <!-- Simple Quantity Selection -->
+                <div class="quantity-selection mb-4">
+                    <h5 class="selection-title">Quantity:</h5>
+                    <div class="quantity-selector">
+                        <button type="button" class="quantity-btn" onclick="decreaseQuantity()">-</button>
+                        <input type="number" id="quantity" name="quantity" value="1" min="1" max="10" class="quantity-input">
+                        <button type="button" class="quantity-btn" onclick="increaseQuantity()">+</button>
+                    </div>
+                </div>
+
+                <div class="product-description mb-4">
+                    <h5 class="description-title">Product Description</h5>
+                    <p class="description-text">{{ product.description|linebreaks }}</p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="product-actions-section mb-5">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <!-- Always show Add to Cart button -->
+                            <button class="btn btn-warning btn-lg w-100 add-to-cart-btn" onclick="addToCart()">
+                                <i class="fas fa-shopping-bag me-2"></i>Add to Cart
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <button class="btn btn-outline-warning btn-lg w-100 add-to-wishlist-btn" onclick="addToWishlist()">
+                                <i class="far fa-heart me-2"></i>Add to Wishlist
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Features -->
+                <div class="quick-features mb-4">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="feature-card">
+                                <i class="fas fa-shipping-fast feature-icon"></i>
+                                <div class="feature-text">
+                                    <strong>Free Shipping</strong>
+                                    <small>Above ₹1999</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="feature-card">
+                                <i class="fas fa-undo-alt feature-icon"></i>
+                                <div class="feature-text">
+                                    <strong>Easy Returns</strong>
+                                    <small>7 Days Policy</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="feature-card">
+                                <i class="fas fa-shield-alt feature-icon"></i>
+                                <div class="feature-text">
+                                    <strong>Quality</strong>
+                                    <small>Assured</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="feature-card">
+                                <i class="fas fa-award feature-icon"></i>
+                                <div class="feature-text">
+                                    <strong>Authentic</strong>
+                                    <small>Ethnic Wear</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Share Product -->
+                <div class="share-product">
+                    <h6 class="share-title">Share this product:</h6>
+                    <div class="share-buttons">
+                        <a href="#" class="share-btn facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="share-btn twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="share-btn pinterest">
+                            <i class="fab fa-pinterest-p"></i>
+                        </a>
+                        <a href="#" class="share-btn whatsapp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Details Tabs -->
+    <div class="product-tabs mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <ul class="nav nav-tabs" id="productTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab">
+                            <i class="fas fa-file-alt me-2"></i>Description
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="care-tab" data-bs-toggle="tab" data-bs-target="#care" type="button" role="tab">
+                            <i class="fas fa-hands me-2"></i>Care Instructions
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" type="button" role="tab">
+                            <i class="fas fa-truck me-2"></i>Shipping Info
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="productTabsContent">
+                    <div class="tab-pane fade show active" id="description" role="tabpanel">
+                        <div class="p-4">
+                            <h5>About this product</h5>
+                            <p>{{ product.description|linebreaks }}</p>
+                            <p>This beautiful ethnic wear piece is crafted with attention to detail and traditional craftsmanship, perfect for special occasions and everyday elegance.</p>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="care" role="tabpanel">
+                        <div class="p-4">
+                            <h5>Care Instructions</h5>
+                            <ul class="care-list">
+                                <li>Dry clean recommended for best results</li>
+                                <li>Iron at low temperature</li>
+                                <li>Store in a cool, dry place</li>
+                                <li>Avoid direct sunlight for extended periods</li>
+                                <li>Handle embellishments with care</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="shipping" role="tabpanel">
+                        <div class="p-4">
+                            <h5>Shipping Information</h5>
+                            <ul class="shipping-list">
+                                <li>Free shipping on orders above ₹1999</li>
+                                <li>Delivery within 3-7 business days</li>
+                                <li>Cash on delivery available</li>
+                                <li>Easy 7-day return policy</li>
+                                <li>Track your order with real-time updates</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    {% if related_products %}
+    <div class="related-products-section mt-5 pt-5">
+        <div class="text-center mb-5">
+            <h2 class="section-title">You May Also Like</h2>
+            <p class="section-subtitle">Discover more from our {{ product.get_category_display_name }} collection</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for related_product in related_products %}
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="product-card">
+                    <div class="product-image">
+                        <a href="{{ related_product.get_absolute_url }}">
+                            <img src="{{ related_product.image.url }}" alt="{{ related_product.name }}" class="img-fluid">
+                        </a>
+                        {% if related_product.featured %}
+                        <span class="featured-badge">Featured</span>
+                        {% endif %}
+                        <div class="product-actions">
+                            <button class="action-btn wishlist-btn" data-product-id="{{ related_product.id }}">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">{{ related_product.get_category_display_name }}</span>
+                        <h3 class="product-name">
+                            <a href="{{ related_product.get_absolute_url }}">{{ related_product.name }}</a>
+                        </h3>
+                        <div class="product-price">₹{{ related_product.price }}</div>
+                        <a href="{{ related_product.get_absolute_url }}" class="product-detail-btn">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function changeMainImage(src) {
+    document.getElementById('mainProductImage').src = src;
+    
+    // Update active thumbnail
+    document.querySelectorAll('.thumbnail-img').forEach(img => {
+        img.classList.remove('active');
+    });
+    event.target.classList.add('active');
+}
+
+function decreaseQuantity() {
+    const quantityInput = document.getElementById('quantity');
+    let currentValue = parseInt(quantityInput.value);
+    if (currentValue > 1) {
+        quantityInput.value = currentValue - 1;
+    }
+}
+
+function increaseQuantity() {
+    const quantityInput = document.getElementById('quantity');
+    const maxQuantity = parseInt(quantityInput.max);
+    let currentValue = parseInt(quantityInput.value);
+    if (currentValue < maxQuantity) {
+        quantityInput.value = currentValue + 1;
+    }
+}
+
+function addToCart() {
+    const quantity = document.getElementById('quantity').value;
+
+    alert(`✅ ${quantity} item(s) added to cart successfully!`);
+    
+}
+
+function addToWishlist() {
+    // Show wishlist message
+    alert('Product added to wishlist!');
+    
+    // Yaha aage actual wishlist functionality add kar sakte hain
+}
+</script>
+{% endblock %}

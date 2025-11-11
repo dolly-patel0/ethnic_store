@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Page Not Found - Tulsattva{% endblock %}
+{% block content %}
+<div class="container text-center py-5">
+    <h1>404 - Page Not Found</h1>
+    <p>The page you're looking for doesn't exist.</p>
+    <a href="{% url 'home' %}" class="btn btn-warning">Return Home</a>
+</div>
+{% endblock %}
