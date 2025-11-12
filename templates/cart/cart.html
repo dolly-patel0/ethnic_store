@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shopping Cart - Tulsattva{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="container">
+        <!-- Debug Information (Temporarily) -->
+        <div class="alert alert-info">
+            <strong>Debug Info:</strong><br>
+            User: {{ user.username }}<br>
+            Cart: {{ cart }}<br>
+            Total Items: {{ cart_items|length }}<br>
+            Authenticated: {{ user.is_authenticated }}
+        </div>
+
+        <h1 class="page-title mb-5">Shopping Cart</h1>
+
+        {% if messages %}
+        <div class="messages mb-4">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if cart_items %}
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="cart-items">
+                    {% for item in cart_items %}
+                    <div class="cart-item-card">
+                        <div class="row align-items-center">
+                            <div class="col-md-2">
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" 
+                                     class="img-fluid rounded" style="height: 80px; object-fit: cover;">
+                            </div>
+                            <div class="col-md-4">
+                                <h5 class="product-name">
+                                    <a href="{{ item.product.get_absolute_url }}" class="text-decoration-none text-dark">
+                                        {{ item.product.name }}
+                                    </a>
+                                </h5>
+                                <p class="product-category text-muted mb-0">
+                                    {{ item.product.get_category_display_name }}
+                                </p>
+                            </div>
+                            <div class="col-md-2">
+                                <span class="product-price">₹{{ item.product.price }}</span>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="quantity-controls">
+                                    <form method="post" action="{% url 'cart:update_cart_item' item.id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="decrease">
+                                        <button type="submit" class="quantity-btn">-</button>
+                                    </form>
+                                    <span class="quantity">{{ item.quantity }}</span>
+                                    <form method="post" action="{% url 'cart:update_cart_item' item.id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="increase">
+                                        <button type="submit" class="quantity-btn">+</button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <span class="item-total fw-bold">₹{{ item.total_price }}</span>
+                            </div>
+                            <div class="col-md-1">
+                                <form method="post" action="{% url 'cart:remove_from_cart' item.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-remove" title="Remove item">
+                                        <i class="fas fa-trash text-danger"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="cart-summary">
+                    <h4 class="summary-title">Order Summary</h4>
+                    <div class="summary-details">
+                        <div class="summary-row">
+                            <span>Subtotal ({{ cart.total_items }} items)</span>
+                            <span>₹{{ cart.total_price }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Shipping</span>
+                            <span>{% if cart.total_price >= 1999 %}FREE{% else %}₹99{% endif %}</span>
+                        </div>
+                        <div class="summary-row total">
+                            <strong>Total Amount</strong>
+                            <strong>
+                                ₹{% if cart.total_price >= 1999 %}{{ cart.total_price }}{% else %}{{ cart.total_price|add:99 }}{% endif %}
+                            </strong>
+                        </div>
+                    </div>
+                    <a href="{% url 'cart:checkout' %}" class="btn btn-warning btn-lg w-100 mt-3">
+                        <i class="fas fa-lock me-2"></i>Proceed to Checkout
+                    </a>
+                    <a href="{% url 'products:product_list' %}" class="btn btn-outline-warning w-100 mt-2">
+                        <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-shopping-cart fa-4x text-muted mb-3"></i>
+            <h3 class="text-muted">Your cart is empty</h3>
+            <p class="text-muted">Add some beautiful ethnic wear to your cart!</p>
+            <a href="{% url 'products:product_list' %}" class="btn btn-warning btn-lg">
+                <i class="fas fa-bag-shopping me-2"></i>Start Shopping
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

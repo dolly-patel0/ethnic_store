@@ -51,9 +51,17 @@
     <a href="{% url 'wishlist' %}" class="header-icon me-3">
         <i class="far fa-heart"></i>
     </a>
-    <a href="{% url 'cart' %}" class="header-icon me-3">
+     {% comment %} <a href="{% url 'cart:cart_view' %}" class="header-icon me-3 position-relative">
+        <i class="fas fa-shopping-bag"></i>
+        {% if cart_total_items > 0 %}
+        <span class="cart-badge">{{ cart_total_items }}</span>
+        {% endif %}
+    </a> {% endcomment %}
+
+     <a href="/cart/" class="header-icon me-3">
         <i class="fas fa-shopping-bag"></i>
     </a>
+    
     <div class="dropdown">
         <a href="#" class="header-icon dropdown-toggle" id="userDropdown" 
            data-bs-toggle="dropdown" aria-expanded="false">

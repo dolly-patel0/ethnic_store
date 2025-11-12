@@ -78,22 +78,24 @@
                     <p class="description-text">{{ product.description|linebreaks }}</p>
                 </div>
 
-                <!-- Action Buttons -->
-                <div class="product-actions-section mb-5">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <!-- Always show Add to Cart button -->
-                            <button class="btn btn-warning btn-lg w-100 add-to-cart-btn" onclick="addToCart()">
-                                <i class="fas fa-shopping-bag me-2"></i>Add to Cart
-                            </button>
-                        </div>
-                        <div class="col-md-6">
-                            <button class="btn btn-outline-warning btn-lg w-100 add-to-wishlist-btn" onclick="addToWishlist()">
-                                <i class="far fa-heart me-2"></i>Add to Wishlist
-                            </button>
-                        </div>
-                    </div>
-                </div>
+               <div class="product-actions-section mb-5">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <form method="post" action="{% url 'cart:add_to_cart' product.id %}" id="add-to-cart-form">
+                {% csrf_token %}
+                <input type="hidden" name="quantity" id="quantity-input" value="1">
+                <button type="submit" class="btn btn-warning btn-lg w-100 add-to-cart-btn">
+                    <i class="fas fa-shopping-bag me-2"></i>Add to Cart
+                </button>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <button class="btn btn-outline-warning btn-lg w-100 add-to-wishlist-btn">
+                <i class="far fa-heart me-2"></i>Add to Wishlist
+            </button>
+        </div>
+    </div>
+</div>
 
                 <!-- Quick Features -->
                 <div class="quick-features mb-4">
@@ -275,26 +277,80 @@ function changeMainImage(src) {
 
 function decreaseQuantity() {
     const quantityInput = document.getElementById('quantity');
+    const hiddenInput = document.getElementById('quantity-input');
     let currentValue = parseInt(quantityInput.value);
     if (currentValue > 1) {
         quantityInput.value = currentValue - 1;
+        hiddenInput.value = currentValue - 1;
     }
 }
 
 function increaseQuantity() {
     const quantityInput = document.getElementById('quantity');
+    const hiddenInput = document.getElementById('quantity-input');
     const maxQuantity = parseInt(quantityInput.max);
     let currentValue = parseInt(quantityInput.value);
     if (currentValue < maxQuantity) {
         quantityInput.value = currentValue + 1;
+        hiddenInput.value = currentValue + 1;
     }
 }
 
-function addToCart() {
-    const quantity = document.getElementById('quantity').value;
-
-    alert(`✅ ${quantity} item(s) added to cart successfully!`);
+// AJAX functionality for better UX
+document.getElementById('add-to-cart-form').addEventListener('submit', function(e) {
+    e.preventDefault();
     
+    const formData = new FormData(this);
+    
+    fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update cart badge
+            const cartBadge = document.querySelector('.cart-badge');
+            if (cartBadge) {
+                cartBadge.textContent = data.cart_total_items;
+            }
+            alert(data.message);
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // Fallback: submit form normally
+        this.submit();
+    });
+});
+
+
+function addToCart(productId) {
+    const quantity = document.getElementById('quantity').value;
+    
+    fetch(`/cart/add/${productId}/`, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': '{{ csrf_token }}',
+        },
+        body: new URLSearchParams({
+            'quantity': quantity
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+            // Update cart badge
+            document.querySelector('.cart-badge').textContent = data.cart_total_items;
+            alert(data.message);
+        }
+    });
 }
 
 function addToWishlist() {
