@@ -6,23 +6,80 @@ from django.views.decorators.http import require_POST
 from .models import Cart, CartItem
 from products.models import Product
 
-# Temporarily @login_required comment karein
 @login_required
-def cart_view(request):
-    print(f"DEBUG: Cart view called for user {request.user}")  # Debug line
+def add_to_cart(request, product_id):
+    print("=== ADD TO CART STARTED ===")
     
     try:
+        # Get product
+        product = get_object_or_404(Product, id=product_id)
+        print(f"Product: {product.name}")
+        
+        # Get or create cart - force creation
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        print(f"Cart: {cart}, Created: {created}")
+        
+        # Get quantity
+        quantity = int(request.POST.get('quantity', 1))
+        print(f"Quantity: {quantity}")
+        
+        # Check if item exists
+        try:
+            cart_item = CartItem.objects.get(cart=cart, product=product)
+            cart_item.quantity += quantity
+            cart_item.save()
+            message = f'Updated {product.name} quantity to {cart_item.quantity}'
+            print(f"Updated existing item: {cart_item}")
+        except CartItem.DoesNotExist:
+            cart_item = CartItem.objects.create(
+                cart=cart,
+                product=product,
+                quantity=quantity
+            )
+            message = f'{product.name} added to cart!'
+            print(f"Created new item: {cart_item}")
+        
+        # Force refresh and verify
         cart = Cart.objects.get(user=request.user)
-        cart_items = cart.items.all()
-        print(f"DEBUG: Cart found with {cart_items.count()} items")  # Debug line
+        item_count = cart.items.count()
+        print(f"Verification - Cart items: {item_count}")
+        
+        if item_count > 0:
+            messages.success(request, message)
+            print("SUCCESS: Item added to cart")
+        else:
+            messages.error(request, "Failed to add item to cart")
+            print("ERROR: Item not saved")
+        
+        return redirect('cart:cart_view')
+        
+    except Exception as e:
+        print(f"EXCEPTION: {str(e)}")
+        messages.error(request, f'Error adding to cart: {str(e)}')
+        return redirect('products:product_list')
+
+@login_required
+def cart_view(request):
+    print("=== CART VIEW ===")
+    print(f"User: {request.user}")
+    
+    try:
+        # Force get cart
+        cart = Cart.objects.get(user=request.user)
+        cart_items = cart.items.select_related('product').all()
+        
+        print(f"Cart found: {cart}")
+        print(f"Cart items: {cart_items.count()}")
         
         for item in cart_items:
-            print(f"DEBUG: Item - {item.product.name}, Qty: {item.quantity}")  # Debug line
+            print(f" - {item.product.name} (Qty: {item.quantity})")
             
     except Cart.DoesNotExist:
-        print("DEBUG: Cart does not exist")  # Debug line
-        cart = None
+        print("Cart does not exist - creating now")
+        # Create cart if doesn't exist
+        cart = Cart.objects.create(user=request.user)
         cart_items = []
+        print(f"New cart created: {cart}")
     
     context = {
         'cart': cart,
@@ -30,62 +87,9 @@ def cart_view(request):
     }
     return render(request, 'cart/cart.html', context)
 
-# @login_required
 @login_required
-def add_to_cart(request, product_id):
-    print(f"DEBUG: Add to cart called for product {product_id} by user {request.user}")  # Debug line
-    
-    try:
-        product = get_object_or_404(Product, id=product_id)
-        print(f"DEBUG: Product found - {product.name}")  # Debug line
-        
-        # Get or create cart for user
-        cart, created = Cart.objects.get_or_create(user=request.user)
-        print(f"DEBUG: Cart - {cart}, Created - {created}")  # Debug line
-        
-        # Get quantity from form
-        quantity = int(request.POST.get('quantity', 1))
-        print(f"DEBUG: Quantity - {quantity}")  # Debug line
-        
-        # Check if product already in cart
-        try:
-            cart_item = CartItem.objects.get(cart=cart, product=product)
-            print(f"DEBUG: Item exists, updating quantity")  # Debug line
-            cart_item.quantity += quantity
-            cart_item.save()
-            message = f'Updated {product.name} quantity to {cart_item.quantity}'
-        except CartItem.DoesNotExist:
-            print(f"DEBUG: Creating new cart item")  # Debug line
-            cart_item = CartItem.objects.create(
-                cart=cart,
-                product=product,
-                quantity=quantity
-            )
-            message = f'{product.name} added to cart!'
-        
-        print(f"DEBUG: Cart item created/updated - {cart_item}")  # Debug line
-        
-        # Check cart items after adding
-        cart_items_count = cart.items.count()
-        print(f"DEBUG: Total items in cart - {cart_items_count}")  # Debug line
-        
-        messages.success(request, message)
-        
-        # Redirect to cart page
-        return redirect('cart:cart_view')
-            
-    except Exception as e:
-        print(f"DEBUG: Error - {str(e)}")  # Debug line
-        messages.error(request, f'Error adding product to cart: {str(e)}')
-        return redirect('products:product_list')
-
-# @login_required
 @require_POST
 def update_cart_item(request, item_id):
-    if not request.user.is_authenticated:
-        messages.warning(request, 'Please login to update cart.')
-        return redirect('users:signin')
-    
     try:
         cart_item = CartItem.objects.get(id=item_id, cart__user=request.user)
         action = request.POST.get('action')
@@ -102,23 +106,15 @@ def update_cart_item(request, item_id):
             else:
                 cart_item.delete()
                 messages.success(request, 'Item removed from cart!')
-        elif action == 'remove':
-            product_name = cart_item.product.name
-            cart_item.delete()
-            messages.success(request, f'{product_name} removed from cart!')
-            
+                
     except CartItem.DoesNotExist:
         messages.error(request, 'Item not found in cart!')
     
     return redirect('cart:cart_view')
 
-# @login_required
+@login_required
 @require_POST
 def remove_from_cart(request, item_id):
-    if not request.user.is_authenticated:
-        messages.warning(request, 'Please login to remove items from cart.')
-        return redirect('users:signin')
-    
     try:
         cart_item = CartItem.objects.get(id=item_id, cart__user=request.user)
         product_name = cart_item.product.name
@@ -129,6 +125,7 @@ def remove_from_cart(request, item_id):
     
     return redirect('cart:cart_view')
 
+# Other views remain same...
 # @login_required
 def checkout_view(request):
     if not request.user.is_authenticated:

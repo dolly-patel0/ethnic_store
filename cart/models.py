@@ -1,9 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
 from products.models import Product
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Cart(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_cart')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -12,11 +14,17 @@ class Cart(models.Model):
 
     @property
     def total_price(self):
-        return sum(item.total_price for item in self.items.all())
+        try:
+            return sum(item.total_price for item in self.items.all())
+        except:
+            return 0
 
     @property
     def total_items(self):
-        return sum(item.quantity for item in self.items.all())
+        try:
+            return sum(item.quantity for item in self.items.all())
+        except:
+            return 0
 
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, related_name='items', on_delete=models.CASCADE)
@@ -29,7 +37,17 @@ class CartItem(models.Model):
 
     @property
     def total_price(self):
-        return self.product.price * self.quantity
+        try:
+            return self.product.price * self.quantity
+        except:
+            return 0
 
-    class Meta:
-        unique_together = ['cart', 'product']  # Same product multiple times add na ho
+# Signal to create cart when user is created
+@receiver(post_save, sender=User)
+def create_user_cart(sender, instance, created, **kwargs):
+    if created:
+        Cart.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_cart(sender, instance, **kwargs):
+    instance.user_cart.save()
