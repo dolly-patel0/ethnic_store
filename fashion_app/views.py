@@ -74,7 +74,7 @@ def contact(request):
                 settings.DEFAULT_FROM_EMAIL,
                 [email],
                 fail_silently=False,
-            )
+            ) # i am adding this comment just to make changes appear in git push
             
             messages.success(request, 'Thank you for your message! We will contact you soon.')
             return redirect('contact')
@@ -83,6 +83,8 @@ def contact(request):
             messages.error(request, 'There was an error sending your message. Please try again.')
     
     return render(request, 'contact.html')
+
+
 
 def wishlist(request):
     return render(request, 'wishlist.html')
